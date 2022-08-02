@@ -4,8 +4,7 @@ from sqlite3.dbapi2 import Error
 from typing import Any, Dict, List
 
 from tinydb import TinyDB, Query
-from tinydb.operations import set
-from texpraxconnector.dashboard_requests import DashboardConnector
+from texpraxconnector.teamboard_requests import TeamboardConnector, login_data_real, login_data_test
 
 # The latest migration version of the database.
 #
@@ -53,10 +52,6 @@ class Storage:
                 self._run_migrations(migration_level)
 
         logger.info(f"Database initialization of type '{self.db_type}' complete")
-        
-        #TODO: add password/username here
-        self.login_data = {"username":"username",
-           "password":"password"}
 
     def _get_database_connection(
         self, database_type: str, connection_string: str
@@ -189,80 +184,75 @@ class Storage:
 
     def change_last_message_type(self, sent_type: str, room_id: str):
         Room = Query()
+        logger.debug(f"Room ID: {room_id}")
         room_msgs = self.messages.search(Room.roomid == room_id)
+        logger.debug(f"{room_msgs}")
         latest_msg = sorted(room_msgs, key=lambda e: e.doc_id)[len(room_msgs) - 1]
         latest_msg['type'] = sent_type
         Room = Query()
         self.messages.update({"type": sent_type}, (Room.timestamp == latest_msg["timestamp"]) & (Room.sender == latest_msg["sender"]))
+
+    def create_connector(self, testing: bool = False) -> TeamboardConnector:
+        connector = TeamboardConnector()
+        if testing:
+            connector.set_url_test()
+            connector.set_login(login_data_test)
+        else:
+            connector.set_url_real()
+            connector.set_login(login_data_real)
+        connector.init_connector()
+        connector.set_group("Key User")
+
+        return connector
     
     def get_last_message_type(self):
         return self.messages.get(doc_id=len(self.messages))["type"]
 
-    def last_msg_as_problem_to_dashboard(self, room_id: str) -> bool:
+    def get_last_message_with_type(self, room_id: str, searched_type: str):
+        Room = Query()
+        room_msgs = self.messages.search(Room.roomid == room_id)
+        all_messages = sorted(room_msgs, key=lambda e: e.doc_id, reverse = True)
+        for msg in all_messages:
+            if msg["type"] == searched_type:
+                return msg["message"]
+        return ""
+
+    def last_msg_as_problem_to_teamboard(self, room_id: str, testing: bool = False) -> bool:
         try:
+            logger.debug("Trying to store message as problem to teamboard...")
             Room = Query()
             room_msgs = self.messages.search(Room.roomid == room_id)
             last_row = sorted(room_msgs, key=lambda e: e.doc_id)[len(room_msgs) - 1]
-            connector = DashboardConnector(self.login_data)
-            connector.set_group("Key User")
+            connector = self.create_connector(testing)
             connector.create_problem(last_row["message"])
-
             return True
-        except Error:
+        except Error as e:
+            logger.error("Could not store as problem to teamboard: {e}")
             return False
 
-    def last_msg_as_solution_to_dashboard(self, room_id: str) -> bool:
+    def last_msg_as_solution_to_teamboard(self, room_id: str, testing: bool = False) -> bool:
         try: 
-            Room = Query()
-            room_msgs = self.messages.search(Room.roomid == room_id)
-            last_row = sorted(room_msgs, key=lambda e: e.doc_id)[len(room_msgs) - 1]["message"]
-            # Check if the last message was a reply to another message or just a regular message
-            # If it was no reply, ignore it.
-            if not last_row.startswith("> <"):
-                return False
-            # If it was a reply, make sure to find the corresponding problem.
-            # We don't really know when the citation ends, so we have to rely on
-            # a newline character:
-            regex = re.compile(r"> <.*>") 
-            last_row = re.sub(regex, "", last_row).strip() # Removes the part with the username of the old msg
-            old_problem = last_row.split("\n")[0] # This is tricky. If the cited msg contains a newline, this won't work
+            old_problem = self.get_last_message_with_type(room_id, "Problem")
             old_problem = old_problem[:75] if len(old_problem) >= 75 else old_problem # Only the first 75 chars are stored in the teamboard
-            # Remove the part with the old problem and strip newlines from the solution:
-            new_solution = "\n".join(last_row.split("\n")[1:]).strip()
+
+            new_solution = self.get_last_message_with_type(room_id, "Lösung")
             
-            connector = DashboardConnector(self.login_data)
-            connector.set_group("Key User")
-
+            connector = self.create_connector(testing)
             connector.add_solution(old_problem, new_solution)
-
             return True
         except IndexError:
             return False
         except Error:
             return False
 
-    def last_msg_as_cause_to_dashboard(self, room_id: str) -> bool:
+    def last_msg_as_cause_to_teamboard(self, room_id: str, testing: bool = False) -> bool:
         try:
-            Room = Query()
-            room_msgs = self.messages.search(Room.roomid == room_id)
-            last_row = sorted(room_msgs, key=lambda e: e.doc_id)[len(room_msgs) - 1]["message"]
-            # Check if the last message was a reply to another message or just a regular message
-            # If it was no reply, ignore it.
-            if not last_row.startswith("> <"):
-                return False
-            # If it was a reply, make sure to find the corresponding problem.
-            # We don't really know when the citation ends, so we have to rely on
-            # a newline character:
-            regex = re.compile(r"> <.*>") 
-            last_row = re.sub(regex, "", last_row).strip() # Removes the part with the username of the old msg
-            old_problem = last_row.split("\n")[0] # This is tricky. If the cited msg contains a newline, this won't work
+            old_problem = self.get_last_message_with_type(room_id, "Problem")
             old_problem = old_problem[:75] if len(old_problem) >= 75 else old_problem # Only the first 75 chars are stored in the teamboard
-            # Remove the part with the old problem and strip newlines from the solution:
-            new_cause = "\n".join(last_row.split("\n")[1:]).strip()
-            
-            connector = DashboardConnector(self.login_data)
-            connector.set_group("Key User")
 
+            new_cause = self.get_last_message_with_type(room_id, "Ursache")
+            
+            connector = self.create_connector(testing)
             connector.add_cause(old_problem, new_cause)
             return True
         except IndexError:
@@ -318,8 +308,9 @@ class Storage:
                 VALUES ('{}', {})
             """.format(eventid, int(worked))
             )
-        except sqlite3.DatabaseError:
+        except sqlite3.DatabaseError as e:
             logger.warning(f"Could not  store new event {eventid}")
+            logger.debug(f"{e}")
 
     def set_room_recording(self, roomid: str) -> None:
         if self.db_type == "sqlite":
@@ -334,8 +325,9 @@ class Storage:
                     WHERE roomid='{}'
             """.format(roomid)
             )
-        except sqlite3.DatabaseError:
+        except sqlite3.DatabaseError as e:
             logger.warning(f"Could not set the room {roomid} to recording")
+            logger.debug(f"{e}")
 
     def get_room_recording(self, roomid: str) -> bool:
         try:
@@ -372,6 +364,7 @@ class Storage:
             return True
         except sqlite3.DatabaseError as dbe:
             logger.warning(f"Could not get info about event {eventid}")
+            logger.debug(f"{dbe}")
 
     def delete_room(self, roomid: str) -> None:
         if self.db_type == "sqlite":

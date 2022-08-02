@@ -5,7 +5,7 @@ from typing import Any, Awaitable
 
 def run_coroutine(result: Awaitable[Any]) -> Any:
     """Wrapper for asyncio functions to allow them to be run from synchronous functions"""
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
     result = loop.run_until_complete(result)
     loop.close()
     return result

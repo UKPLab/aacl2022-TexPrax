@@ -1,5 +1,6 @@
 import logging
 from time import sleep, time
+from pathlib import Path
 
 from nio import (
     AsyncClient,
@@ -13,7 +14,8 @@ from nio import (
     UnknownEvent,
     ErrorResponse,
 )
-from numpy import isin
+from nio.api import RoomVisibility
+from nio.responses import RoomCreateResponse
 
 from autorecorderbot.bot_commands import Command
 from autorecorderbot.chat_functions import make_pill, react_to_event, send_text_to_room
@@ -23,6 +25,29 @@ from autorecorderbot.storage import Storage
 from autorecorderbot.intelligence import SentenceClassPredictor, TokenClassPredictor
 
 logger = logging.getLogger(__name__)
+
+
+# Language class, used for translating the things the bot says
+# Every line in the language file corresponds to one "thing" the bot is able to say.
+# The array line_to_text_index indicates which line is used for which translation.
+# Some lines require placeholder like this: {} to include situation specific content, please 
+# make sure to leave them in when creating a new language file.
+class Language:
+    def __init__(self, file: Path) -> None:
+        line_to_text_index = [
+            "yes",
+            "other_type",
+            "problem_type",
+            "cause_type",
+            "solution_type",
+            "hello",
+            "sentence_detected",
+            "hello_again",
+        ]
+        self.texts = {}
+        with open(file, "r") as langfile:
+            for i, line in enumerate(langfile):
+                self.texts[line_to_text_index[i]] = line
 
 
 class Callbacks:
@@ -41,6 +66,7 @@ class Callbacks:
         self.command_prefix = config.command_prefix
         self.sequence_predictor = SentenceClassPredictor(config.sequence_model_path)
         self.token_predictor = TokenClassPredictor(config.token_model_path)
+        self.language = Language(self.config.language_file_path)
 
     async def message(self, room: MatrixRoom, event: RoomMessageText) -> None:
         """Callback for when a message event is received
@@ -62,20 +88,26 @@ class Callbacks:
             f"{room.user_name(event.sender)}: {msg}"
         )
 
-        avail_sentence_types = set(['O', 'Problem', 'Ursache', 'Lösung'])
+        avail_sentence_types = set([self.language.texts["other_type"], self.language.texts["problem_type"], self.language.texts["cause_type"], self.language.texts["solution_type"]])
 
         if self.store.get_room_recording(room.room_id) and not msg.startswith(":"):
             sent_prediction = self.sequence_predictor.predict(msg)
             tokens, labels = self.token_predictor.predict(msg)
             joined = [ f"{t}: {l}" for t, l in zip(tokens, labels) if l != "O"]
+
+            # If no token was found, ask the user in a private room
+            # response = self.client.room_create(RoomVisibility.private, is_direct=True, invite=[event.sender])
+            # if isinstance(response, RoomCreateResponse):
+            #     print(response)
+
             self.store.store_message(room.room_id, msg, event.sender, event.server_timestamp, sent_prediction, joined)
-            response = await send_text_to_room(self.client, room.room_id, f'I detected the following sentence type: {sent_prediction}. Is that correct? \n' +
-                f'If it is correct, please type :yes, otherwise one of the following commands to correct it: {[f":{t}" for t in avail_sentence_types.difference([sent_prediction])]}')
+            response = await send_text_to_room(self.client, room.room_id, self.language.texts["sentence_detected"].format(sent_prediction), reply_to_event_id=event.event_id)
             if isinstance(response, RoomSendResponse):
-                await react_to_event(self.client, response.room_id, response.event_id, 'Yes')
+                await react_to_event(self.client, response.room_id, response.event_id, self.language.texts["yes"])
                 for t in avail_sentence_types.difference([sent_prediction]):
-                    await react_to_event(self.client, response.room_id, response.event_id, f'{t}')
-                    sleep(0.1)
+                    react_result = await react_to_event(self.client, response.room_id, response.event_id, f'{t}')
+                    sleep(0.001)
+                # await react_to_event(self.client, response.room_id, response.event_id, self.language.texts["leave_room"])
 
         # Process as message if in a public room without command prefix
         has_command_prefix = msg.startswith(self.command_prefix)
@@ -123,7 +155,7 @@ class Callbacks:
             response = await send_text_to_room(
                 self.client,
                 room.room_id,
-                "Hello! I am here to record your messages. If you want me to record, please click either ✔️/❌ for yes/no."
+                self.language.texts["hello"]
             )
             if isinstance(response, RoomSendResponse):
                 await react_to_event(self.client, room.room_id, response.event_id, "✔️")
@@ -163,8 +195,8 @@ class Callbacks:
         # Stay in room
         if reaction_content == '✔️':
             if not self.store.get_event_worked(reacted_to_id):
-                response = "Okay, I will stay!"
-                await send_text_to_room(self.client, room.room_id, response)
+                # response = "Okay, I will stay!"
+                # await send_text_to_room(self.client, room.room_id, response)
                 self.store.set_room_recording(room.room_id)
                 self.store.store_new_event(reacted_to_id, True)
             return
@@ -172,15 +204,15 @@ class Callbacks:
         # Leave room
         if reaction_content == '❌':
             if not self.store.get_event_worked(reacted_to_id):
-                response = "Okay, I will leave now!"
-                await send_text_to_room(self.client, room.room_id, response)
+                # response = "Okay, I will leave now!"
+                # await send_text_to_room(self.client, room.room_id, response)
                 await self.client.room_leave(room.room_id)
                 self.store.delete_room(room.room_id)
                 self.store.store_new_event(reacted_to_id, True)
             return
 
         # Accept prediction
-        if reaction_content == 'Yes':
+        if reaction_content == self.language.texts["yes"]:
             if not self.store.get_event_worked(reacted_to_id):
                 prediction = self.store.get_last_message_type()
 
@@ -189,57 +221,65 @@ class Callbacks:
                     return
 
                 if prediction == 'Ursache':
-                    if self.store.last_msg_as_cause_to_teamboard(room.room_id):
+                    if self.store.last_msg_as_cause_to_teamboard(room.room_id, self.config.use_testing_storage):
                         response = 'Message was stored as a cause to the teamboard!'
                     else:
                         response = 'Message could not be stored as a cause to the teamboard!'
                 elif prediction == 'Problem':
-                    if self.store.last_msg_as_problem_to_teamboard(room.room_id):
+                    if self.store.last_msg_as_problem_to_teamboard(room.room_id, self.config.use_testing_storage):
                         response = 'Message was stored as a problem to the teamboard!'
                     else:
                         response = 'Message could not be stored as a problem to the teamboard!'
                 elif prediction == 'Lösung':
-                    if self.store.last_msg_as_solution_to_teamboard(room.room_id):
+                    if self.store.last_msg_as_solution_to_teamboard(room.room_id, self.config.use_testing_storage):
                         response = 'Message was stored as a solution to the teamboard!'
                     else:
                         response = 'Message could not be stored as a solution to the teamboard!'
 
-                await send_text_to_room(self.client, room.room_id, response)
+                # await send_text_to_room(self.client, room.room_id, response)
                 self.store.store_new_event(reacted_to_id, True)
             return
 
-        if reaction_content == 'Ursache':
+        if reaction_content == self.language.texts["cause_type"]:
             if not self.store.get_event_worked(reacted_to_id):
-                if self.store.last_msg_as_cause_to_teamboard(room.room_id):
+                self.store.change_last_message_type("Ursache", room.room_id)
+                if self.store.last_msg_as_cause_to_teamboard(room.room_id, self.config.use_testing_storage):
                     response = 'Message was stored as a cause to the teamboard!'
                 else:
                     response = 'Message could not be stored as a cause to the teamboard!'
 
-                await send_text_to_room(self.client, room.room_id, response)
+                # await send_text_to_room(self.client, room.room_id, response)
                 self.store.store_new_event(reacted_to_id, True)
             return
 
-        if reaction_content == 'Problem':
+        if reaction_content == self.language.texts["problem_type"]:
             if not self.store.get_event_worked(reacted_to_id):
-                if self.store.last_msg_as_problem_to_teamboard(room.room_id):
+                self.store.change_last_message_type("Problem", room.room_id)
+                if self.store.last_msg_as_problem_to_teamboard(room.room_id, self.config.use_testing_storage):
                     response = 'Message was stored as a problem to the teamboard!'
                 else:
                     response = 'Message could not be stored as a problem to the teamboard!'
 
-                await send_text_to_room(self.client, room.room_id, response)
+                # await send_text_to_room(self.client, room.room_id, response)
                 self.store.store_new_event(reacted_to_id, True)
             return
 
-        if reaction_content == 'Lösung':
+        if reaction_content == self.language.texts["solution_type"]:
             if not self.store.get_event_worked(reacted_to_id):
-                if self.store.last_msg_as_solution_to_teamboard(room.room_id):
+                self.store.change_last_message_type("Lösung", room.room_id)
+                if self.store.last_msg_as_solution_to_teamboard(room.room_id, self.config.use_testing_storage):
                     response = 'Message was stored as a solution to the teamboard!'
                 else:
                     response = 'Message could not be stored as a solution to the teamboard!'
 
-                await send_text_to_room(self.client, room.room_id, response)
+                # await send_text_to_room(self.client, room.room_id, response)
                 self.store.store_new_event(reacted_to_id, True)
             return
+
+        # if reaction_content == self.language.texts["leave_room"]:
+        #     await self.client.room_leave(room.room_id)
+        #     self.store.delete_room(room.room_id)
+        #     return
             
 
 
