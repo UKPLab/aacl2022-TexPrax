@@ -113,6 +113,12 @@ class Config:
         self.sequence_model_path = self._get_cfg(["intelligence", "sequence_model_path"], required=True)
         self.token_model_path = self._get_cfg(["intelligence", "token_model_path"], required=True)
 
+        # Check if the testing connector should be used
+        self.use_testing_storage = self._get_cfg(["storage", "use_testing"], required=True)
+
+        # Get the path to the language file
+        self.language_file_path = self._get_cfg(["intelligence", "language_file_path"], required=True)
+
     def _get_cfg(
         self,
         path: List[str],
