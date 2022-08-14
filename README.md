@@ -8,6 +8,12 @@ Code for the [TexPrax](https://texprax.de/) project consisting of three componen
 
 A detailed description and installation instructions can be found in the respective folders.
 
+A demo video of the project can be found [here](https://nextcloud.ukp.informatik.tu-darmstadt.de/index.php/s/EcQxDwAEeNT4w8n).
+
+## Data
+
+An anoymized version of the collected data including annotations can be downloaded from [tudatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/3534) (CC-by-NC). 
+
 ### Synapserecording
 
 The modified Synapse instance to automatically invite the bot into newly created rooms.
