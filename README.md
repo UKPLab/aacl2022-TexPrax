@@ -1,4 +1,18 @@
 # TexPrax
+### Lorenz Stangier`*`, Ji-Ung Lee`*`, Yuxi Wang, Marvin Müller, Nicholas Frick, Joachim Metternich, and Iryna Gurevych
+#### [UKP Lab, TU Darmstadt](https://www.informatik.tu-darmstadt.de/ukp/ukp_home/index.en.jsp)
+#### [PTW, TU Darmstadt](https://www.ptw.tu-darmstadt.de/institut_ptw/index.de.jsp)
+`*` Both authors contributed equally.
+
+> Drop us a line or report an issue if something is broken (and shouldn't be) or if you have any questions.
+
+* **Contact** 
+    * Ji-Ung Lee (lee@ukp.informatik.tu-darmstadt.de) 
+    * UKP Lab: http://www.ukp.tu-darmstadt.de/
+    * PTW: https://www.ptw.tu-darmstadt.de/
+    * TU Darmstadt: http://www.tu-darmstadt.de/
+
+> For license information, please see the LICENSE and README files.
 
 Code for the [TexPrax](https://texprax.de/) project consisting of three components:
 
@@ -26,3 +40,19 @@ The chatbot that keeps track of messages, provides label suggestions, and collec
 ### Texprax Connector
 
 Example code to exchange data with an external dashboard via HTTP requests. 
+
+
+## Citing the paper
+
+The respective article is still under review. In the meantime, please cite our paper as:
+```
+@article{muller2021extracting,
+  title={Extracting problem related entities from production chats to enhance the data base for assistance functions on the shop floor},
+  author={M{\"u}ller, Marvin and Lee, Ji-Ung and Frick, Nicholas and Stangier, Lorenz and Gurevych, Iryna and Metternich, Joachim},
+  journal={Procedia CIRP},
+  volume={103},
+  pages={231--236},
+  year={2021},
+  publisher={Elsevier}
+}
+```
