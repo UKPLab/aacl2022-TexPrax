@@ -24,6 +24,8 @@ A detailed description and installation instructions can be found in the respect
 
 A demo video of the project can be found [here](https://nextcloud.ukp.informatik.tu-darmstadt.de/index.php/s/EcQxDwAEeNT4w8n).
 
+> Disclaimer: This repository contains experimental software and is published for the sole purpose of giving additional background details on the respective publication. 
+
 ## Data
 
 An anoymized version of the collected data including annotations can be downloaded from [tudatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/3534) (CC-by-NC). 
