@@ -44,17 +44,14 @@ The chatbot that keeps track of messages, provides label suggestions, and collec
 Example code to exchange data with an external dashboard via HTTP requests. 
 
 
-## Citing the paper
+## Citing the paper (preprint)
 
-The respective article is still under review. In the meantime, please cite our paper as:
 ```
-@article{muller2021extracting,
-  title={Extracting problem related entities from production chats to enhance the data base for assistance functions on the shop floor},
-  author={M{\"u}ller, Marvin and Lee, Ji-Ung and Frick, Nicholas and Stangier, Lorenz and Gurevych, Iryna and Metternich, Joachim},
-  journal={Procedia CIRP},
-  volume={103},
-  pages={231--236},
-  year={2021},
-  publisher={Elsevier}
+@article{stangier2022texprax,
+  title={TexPrax: A Messaging Application for Ethical, Real-time Data Collection and Annotation},
+  author={Stangier, Lorenz and Lee, Ji-Ung and Wang, Yuxi and M{\"u}ller, Marvin and Frick, Nicholas and Metternich, Joachim and Gurevych, Iryna},
+  journal={arXiv preprint arXiv:2208.07846},
+  year={2022}
 }
+
 ```
