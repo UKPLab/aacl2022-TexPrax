@@ -28,7 +28,7 @@ A demo video of the project can be found [here](https://nextcloud.ukp.informatik
 
 ## Data
 
-An anoymized version of the collected data including annotations can be downloaded from [tudatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/3534) or via [https://huggingface.co/datasets/UKPLab/TexPrax](huggingface-datasets) (CC-by-NC). 
+An anoymized version of the collected data including annotations can be downloaded from [tudatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/3534) or via [huggingface-datasets](https://huggingface.co/datasets/UKPLab/TexPrax) (CC-by-NC). 
 
 ### Synapserecording
 
