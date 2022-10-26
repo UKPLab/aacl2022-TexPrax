@@ -14,7 +14,7 @@ matrix:
   # Matrix account access token (optional if password used)
   #user_token: ""
   # The URL of the homeserver to connect to
-  homeserver_url: http://localhost:8080
+  homeserver_url: http://localhost:8008
   # The device ID that is **non pre-existing** device
   # If this device ID already exists, messages will be dropped silently in encrypted rooms
   device_id: ABCDEFGHIJ
@@ -31,7 +31,8 @@ storage:
   # The path to a directory for internal bot storage
   # containing encryption keys, sync tokens, etc.
   store_path: "./store"
-  message_path: "./store/messages.txt"
+  message_path: "./store/messages.json"
+  use_testing: false
 
 
 # Logging setup
@@ -49,3 +50,14 @@ logging:
   console_logging:
     # Whether logging to the console is enabled
     enabled: true
+    
+# Model path    
+intelligence:
+    # Use huggingface (not a pre-trained one)
+    use_huggingface: true
+    # Path (or huggingfacename) to sequence classification model
+    sequence_model_path: "models/sequence_classification_model"  
+    # Path (or huggingfacename) to token classification model
+    token_model_path: "models/token_classification_model"  
+    # Path to language file folder
+    language_file_path: "language_files/DE.txt"
