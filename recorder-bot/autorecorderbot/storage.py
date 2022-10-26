@@ -4,7 +4,7 @@ from sqlite3.dbapi2 import Error
 from typing import Any, Dict, List
 
 from tinydb import TinyDB, Query
-from texpraxconnector.teamboard_requests import TeamboardConnector, login_data_real, login_data_test
+from texpraxconnector.dashboard_requests import DashboardConnector, login_data
 
 # The latest migration version of the database.
 #
@@ -192,8 +192,8 @@ class Storage:
         Room = Query()
         self.messages.update({"type": sent_type}, (Room.timestamp == latest_msg["timestamp"]) & (Room.sender == latest_msg["sender"]))
 
-    def create_connector(self, testing: bool = False) -> TeamboardConnector:
-        connector = TeamboardConnector()
+    def create_connector(self, testing: bool = False) -> DashboardConnector:
+        connector = DashboardConnector()
         if testing:
             connector.set_url_test()
             connector.set_login(login_data_test)
