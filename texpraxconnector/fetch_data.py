@@ -1,7 +1,7 @@
 from teamboard_requests import DashboardConnector
 
 #TODO: change this according to your respective dashboard!
-login_data = "username":"username", 
+login_data = {"username":"username", 
               "password":"password"}
               
 def write_data(data, user_id):
@@ -21,9 +21,8 @@ def write_data(data, user_id):
                             
 
 #Test fetching data:
-connector = TeamboardConnector()
-connector.set_url_real()
-connector.set_login(login_data_real)
+connector = DashboardConnector()
+connector.set_login(login_data)
 connector.init_connector()
 connector.set_group("Key User")
 #udata = connector.get_user_data()

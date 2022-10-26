@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 import asyncio
+import collections.abc
+#for python 3.10: use manual aliases.
+collections.Iterable = collections.abc.Iterable
+collections.Mapping = collections.abc.Mapping
+collections.MutableSet = collections.abc.MutableSet
+collections.MutableMapping = collections.abc.MutableMapping
 
 try:
     from autorecorderbot import main

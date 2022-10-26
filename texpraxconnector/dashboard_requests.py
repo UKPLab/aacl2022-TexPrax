@@ -3,7 +3,7 @@ import json
 import time
 
 #TODO: change this according to your respective dashboard!
-login_data = "username":"username", 
+login_data = {"username":"username", 
               "password":"password"}
               
 class DashboardConnector:
