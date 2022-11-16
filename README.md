@@ -66,14 +66,14 @@ Clone the repostiory
 ```git clone https://github.com/UKPLab/TexPrax.git```
 
 
-Setup your python environment
+Setup your python environment (for now, only 3.7 is supported).
 
 ```
-conda create --name=texprax-demo python=3.10
+conda create --name=texprax-demo python=3.7
 conda activate texprax-demo
 ```
 
-<small>Note: Due to dependicies on ```collections``` and 
+<small>Note: There are some incompetabilities wrt. ```collections``` and the encryption modules for python 3.10.
 </small>
 
 Install the synapse server first. In your cloned repository, go to synapserecording:
