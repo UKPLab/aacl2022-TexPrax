@@ -4,7 +4,6 @@ from sqlite3.dbapi2 import Error
 from typing import Any, Dict, List
 
 from tinydb import TinyDB, Query
-from texpraxconnector.dashboard_requests import DashboardConnector, login_data
 
 # The latest migration version of the database.
 #
@@ -18,7 +17,7 @@ latest_migration_version = 0
 logger = logging.getLogger(__name__)
 
 
-class Storage:
+class Storage_Local:
     def __init__(self, database_config: Dict[str, str]):
         """Setup the database.
 
@@ -191,15 +190,6 @@ class Storage:
         latest_msg['type'] = sent_type
         Room = Query()
         self.messages.update({"type": sent_type}, (Room.timestamp == latest_msg["timestamp"]) & (Room.sender == latest_msg["sender"]))
-
-    def create_connector(self) -> DashboardConnector:
-        connector = DashboardConnector()
-        connector.set_url()
-        connector.set_login(login_data)
-        connector.init_connector()
-        connector.set_group("Key User")
-
-        return connector
     
     def get_last_message_type(self):
         return self.messages.get(doc_id=len(self.messages))["type"]
@@ -212,40 +202,6 @@ class Storage:
             if msg["type"] == searched_type:
                 return msg["message"]
         return ""
-
-    def store_msg_to_teamboard(self, room_id: str, msg_type: str) -> bool:
-        try:
-            if msg_type == "Problem":
-                logger.debug("Trying to store message as problem to teamboard...")
-                Room = Query()
-                room_msgs = self.messages.search(Room.roomid == room_id)
-                last_row = sorted(room_msgs, key=lambda e: e.doc_id)[len(room_msgs) - 1]
-                connector = self.create_connector()
-                connector.create_problem(last_row["message"])
-                return True
-            elif msg_type == "Ursache":
-                old_problem = self.get_last_message_with_type(room_id, "Problem")
-                old_problem = old_problem[:75] if len(old_problem) >= 75 else old_problem # Only the first 75 chars are stored in the teamboard
-
-                new_cause = self.get_last_message_with_type(room_id, "Ursache")
-                
-                connector = self.create_connector()
-                connector.add_cause(old_problem, new_cause)
-                return True
-            elif msg_type == "Lösung":
-                old_problem = self.get_last_message_with_type(room_id, "Problem")
-                old_problem = old_problem[:75] if len(old_problem) >= 75 else old_problem # Only the first 75 chars are stored in the teamboard
-
-                new_solution = self.get_last_message_with_type(room_id, "Lösung")
-                
-                connector = self.create_connector()
-                connector.add_solution(old_problem, new_solution)
-                return True
-        except Error as e:
-            logger.error("Could not store as problem to teamboard: {e}")
-            return False
-        except IndexError:
-            return False
 
     def store_new_room(self, roomid: str, timestamp: int) -> bool:
         """Stores a new room in the database.

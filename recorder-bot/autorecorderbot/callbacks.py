@@ -161,6 +161,20 @@ class Callbacks:
                 await react_to_event(self.client, room.room_id, response.event_id, "✔️")
                 await react_to_event(self.client, room.room_id, response.event_id, "❌")
 
+    async def _get_response(
+        self, room: MatrixRoom, prediction: str
+    ) -> str:
+        """Store a prediction to the storage and return the respective response
+        """
+        if self.config.store_locally:
+            return "Stored locally."
+        
+        if self.store.store_msg_to_teamboard(room.room_id, prediction):
+            return "Message was stored as a {} to the teamboard!".format(prediction)
+        else:
+            return "Message could not be stored as a {} to the teamboard".format(prediction)
+                    
+                    
     async def _reaction(
         self, room: MatrixRoom, event: UnknownEvent, reacted_to_id: str
     ) -> None:
@@ -219,22 +233,7 @@ class Callbacks:
                 if prediction == 'O':
                     self.store.store_new_event(reacted_to_id, True)
                     return
-
-                if prediction == 'Ursache':
-                    if self.store.last_msg_as_cause_to_teamboard(room.room_id, self.config.use_testing_storage):
-                        response = 'Message was stored as a cause to the teamboard!'
-                    else:
-                        response = 'Message could not be stored as a cause to the teamboard!'
-                elif prediction == 'Problem':
-                    if self.store.last_msg_as_problem_to_teamboard(room.room_id, self.config.use_testing_storage):
-                        response = 'Message was stored as a problem to the teamboard!'
-                    else:
-                        response = 'Message could not be stored as a problem to the teamboard!'
-                elif prediction == 'Lösung':
-                    if self.store.last_msg_as_solution_to_teamboard(room.room_id, self.config.use_testing_storage):
-                        response = 'Message was stored as a solution to the teamboard!'
-                    else:
-                        response = 'Message could not be stored as a solution to the teamboard!'
+                response = self._get_response(room, prediction)
 
                 # await send_text_to_room(self.client, room.room_id, response)
                 self.store.store_new_event(reacted_to_id, True)
@@ -243,10 +242,7 @@ class Callbacks:
         if reaction_content == self.language.texts["cause_type"]:
             if not self.store.get_event_worked(reacted_to_id):
                 self.store.change_last_message_type("Ursache", room.room_id)
-                if self.store.last_msg_as_cause_to_teamboard(room.room_id, self.config.use_testing_storage):
-                    response = 'Message was stored as a cause to the teamboard!'
-                else:
-                    response = 'Message could not be stored as a cause to the teamboard!'
+                response = self._get_response(room, "Ursache")
 
                 # await send_text_to_room(self.client, room.room_id, response)
                 self.store.store_new_event(reacted_to_id, True)
@@ -255,10 +251,7 @@ class Callbacks:
         if reaction_content == self.language.texts["problem_type"]:
             if not self.store.get_event_worked(reacted_to_id):
                 self.store.change_last_message_type("Problem", room.room_id)
-                if self.store.last_msg_as_problem_to_teamboard(room.room_id, self.config.use_testing_storage):
-                    response = 'Message was stored as a problem to the teamboard!'
-                else:
-                    response = 'Message could not be stored as a problem to the teamboard!'
+                response = self._get_response(room, "Problem")
 
                 # await send_text_to_room(self.client, room.room_id, response)
                 self.store.store_new_event(reacted_to_id, True)
@@ -267,10 +260,7 @@ class Callbacks:
         if reaction_content == self.language.texts["solution_type"]:
             if not self.store.get_event_worked(reacted_to_id):
                 self.store.change_last_message_type("Lösung", room.room_id)
-                if self.store.last_msg_as_solution_to_teamboard(room.room_id, self.config.use_testing_storage):
-                    response = 'Message was stored as a solution to the teamboard!'
-                else:
-                    response = 'Message could not be stored as a solution to the teamboard!'
+                response = self._get_response(room, "Lösung")
 
                 # await send_text_to_room(self.client, room.room_id, response)
                 self.store.store_new_event(reacted_to_id, True)

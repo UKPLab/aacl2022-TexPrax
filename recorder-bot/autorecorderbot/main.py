@@ -20,6 +20,7 @@ from autorecorderbot.callbacks import Callbacks
 from autorecorderbot.config import Config
 from autorecorderbot.storage import Storage
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,6 +39,7 @@ async def main():
 
     # Configure the database
     store = Storage(config.database)
+
 
     # Configuration options for the AsyncClient
     client_config = AsyncClientConfig(

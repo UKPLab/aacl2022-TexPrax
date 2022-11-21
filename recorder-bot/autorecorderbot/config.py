@@ -60,7 +60,7 @@ class Config:
 
         # Storage setup
         self.store_path = self._get_cfg(["storage", "store_path"], required=True)
-
+        self.store_locally = self._get_cfg(["storage","store_path"], required=True)
         # Create the store folder if it doesn't exist
         if not os.path.isdir(self.store_path):
             if not os.path.exists(self.store_path):
