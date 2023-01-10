@@ -187,7 +187,3 @@ Finally, run the bot via:
 ```
 LD_LIBRARY_PATH=<path-to-olm>/olm/build/ python autorecorderbot_start
 ```
-
-<small>Note: If you plan to use the dashboard connection (by default) you will have to copy the folder ```texpraxconnector``` acessible (either by copying into recorder-bot or adding it to your paths).
-</small>
-
