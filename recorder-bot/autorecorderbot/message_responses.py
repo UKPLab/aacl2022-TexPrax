@@ -4,7 +4,7 @@ from nio import AsyncClient, MatrixRoom, RoomMessageText
 
 from autorecorderbot.chat_functions import send_text_to_room
 from autorecorderbot.config import Config
-from autorecorderbot.storage import Storage
+from autorecorderbot.storage_local import Storage
 
 logger = logging.getLogger(__name__)
 

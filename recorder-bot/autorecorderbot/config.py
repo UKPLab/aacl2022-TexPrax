@@ -108,6 +108,8 @@ class Config:
         self.homeserver_url = self._get_cfg(["matrix", "homeserver_url"], required=True)
 
         self.command_prefix = self._get_cfg(["command_prefix"], default="!c") + " "
+        
+        self.encryption = self._get_cfg(["matrix", "encryption"], required=True)
 
         # Model Paths
         self.sequence_model_path = self._get_cfg(["intelligence", "sequence_model_path"], required=True)

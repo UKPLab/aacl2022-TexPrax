@@ -18,7 +18,7 @@ from nio import (
 
 from autorecorderbot.callbacks import Callbacks
 from autorecorderbot.config import Config
-from autorecorderbot.storage import Storage
+from autorecorderbot.storage_local import Storage
 
 
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ async def main():
         max_limit_exceeded=0,
         max_timeouts=0,
         store_sync_tokens=True,
-        encryption_enabled=False,
+        encryption_enabled=config.encryption,
     )
 
     # Initialize the matrix client
