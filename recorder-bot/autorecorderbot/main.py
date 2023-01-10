@@ -18,7 +18,7 @@ from nio import (
 
 from autorecorderbot.callbacks import Callbacks
 from autorecorderbot.config import Config
-from autorecorderbot.storage_local import Storage
+from autorecorderbot.storage_remote import Storage
 
 
 logger = logging.getLogger(__name__)

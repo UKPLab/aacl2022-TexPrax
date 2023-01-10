@@ -21,7 +21,7 @@ from autorecorderbot.bot_commands import Command
 from autorecorderbot.chat_functions import make_pill, react_to_event, send_text_to_room
 from autorecorderbot.config import Config
 from autorecorderbot.message_responses import Message
-from autorecorderbot.storage_local import Storage
+from autorecorderbot.storage_remote import Storage
 from autorecorderbot.intelligence import SentenceClassPredictor, TokenClassPredictor
 
 logger = logging.getLogger(__name__)
@@ -169,11 +169,10 @@ class Callbacks:
         if self.config.store_locally:
             return "Stored locally."
         
-        # TODO: add call to dashboard storage here
-        #if self.store.store_msg_to_teamboard(room.room_id, prediction):
-        #    return "Message was stored as a {} to the teamboard!".format(prediction)
-        #else:
-        #    return "Message could not be stored as a {} to the teamboard".format(prediction)
+        if self.store.store_msg_to_teamboard(room.room_id, prediction):
+            return "Message was stored as a {} to the teamboard!".format(prediction)
+        else:
+            return "Message could not be stored as a {} to the teamboard".format(prediction)
                     
                     
     async def _reaction(

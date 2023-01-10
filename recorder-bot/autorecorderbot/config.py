@@ -73,8 +73,11 @@ class Config:
         # Database setup
         database_path = self._get_cfg(["storage", "database"], required=True)
 
-        # Message Stroage setuo
+        # Message Stroage setup
         message_path = self._get_cfg(["storage", "message_path"], required=True)
+        
+        # Remote storage config
+        remote_config = self._get_cfg(["storage", "remote_connection"], required=True)
 
         # Support both SQLite and Postgres backends
         # Determine which one the user intends
@@ -84,7 +87,8 @@ class Config:
             self.database = {
                 "type": "sqlite",
                 "connection_string": database_path[len(sqlite_scheme) :],
-                "message_path": message_path
+                "message_path": message_path,
+                "remote_config": remote_config
             }
         elif database_path.startswith(postgres_scheme):
             self.database = {"type": "postgres", "connection_string": database_path, "message_path": message_path}

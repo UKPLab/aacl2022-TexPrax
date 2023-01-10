@@ -33,8 +33,7 @@ storage:
   # The path to a directory for internal bot storage
   # containing encryption keys, sync tokens, etc.
   store_path: "./store"
-  message_path: "./store/messages.json"
-  use_testing: false
+  remote_connection: "./remote_connector/dashboard_config.yaml"
 
 
 # Logging setup

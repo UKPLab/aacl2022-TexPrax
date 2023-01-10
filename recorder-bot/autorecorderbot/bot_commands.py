@@ -3,7 +3,7 @@ from nio import AsyncClient, MatrixRoom, RoomMessageText
 
 from autorecorderbot.chat_functions import react_to_event, send_text_to_room
 from autorecorderbot.config import Config
-from autorecorderbot.storage_local import Storage
+from autorecorderbot.storage_remote import Storage
 
 
 class Command:

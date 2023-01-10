@@ -4,7 +4,7 @@ from sqlite3.dbapi2 import Error
 from typing import Any, Dict, List
 
 from tinydb import TinyDB, Query
-from texpraxconnector.dashboard_requests import DashboardConnector, login_data
+from remote_connector.dashboard_requests import DashboardConnector
 
 # The latest migration version of the database.
 #
@@ -31,6 +31,7 @@ class Storage:
                 * connection_string: A string, featuring a connection string that
                     be fed to each respective db library's `connect` method.
         """
+        self.remote_config = database_config["remote_config"]
         self.conn = self._get_database_connection(
             database_config["type"], database_config["connection_string"]
         )
@@ -193,9 +194,7 @@ class Storage:
         self.messages.update({"type": sent_type}, (Room.timestamp == latest_msg["timestamp"]) & (Room.sender == latest_msg["sender"]))
 
     def create_connector(self) -> DashboardConnector:
-        connector = DashboardConnector()
-        connector.set_url()
-        connector.set_login(login_data)
+        connector = DashboardConnector(self.remote_config)
         connector.init_connector()
         connector.set_group("Key User")
         
