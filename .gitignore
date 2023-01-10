@@ -1,0 +1,5 @@
+recorder-bot/olm/
+autorecorderbot/__pycache__/
+store/
+models/
+bot.db

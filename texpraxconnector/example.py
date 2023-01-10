@@ -1,9 +1,7 @@
-from teamboard_requests import DashboardConnector
+import yaml
 
-#TODO: change this according to your respective dashboard!
-login_data = {"username":"username", 
-              "password":"password"}
-              
+from dashboard_requests import DashboardConnector
+
 def write_data(data, user_id):
     with open('outputfile.csv','w') as outlog:
         outlog.write('"Task Type";"Subject";"Content"\n')
@@ -21,8 +19,7 @@ def write_data(data, user_id):
                             
 
 #Test fetching data:
-connector = DashboardConnector()
-connector.set_login(login_data)
+connector = DashboardConnector("dashboard_config.yaml")
 connector.init_connector()
 connector.set_group("Key User")
 #udata = connector.get_user_data()

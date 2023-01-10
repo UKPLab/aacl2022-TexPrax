@@ -1,15 +1,58 @@
 import requests
 import json
 import time
+          
+class Config:
+    """Creates a Config object from a YAML-encoded config file from a given filepath"""
 
-#TODO: change this according to your respective dashboard!
-login_data = {"username":"username", 
-              "password":"password"}
+    def __init__(self, filepath: str):
+        self.filepath = filepath
+        if not os.path.isfile(filepath):
+            raise ConfigError(f"Config file '{filepath}' does not exist")
+
+        # Load in the config file at the given filepath
+        with open(filepath) as file_stream:
+            self.config_dict = yaml.safe_load(file_stream.read())
+
+        self.username = self._get_cfg(["username"], required=True)
+        self.password = self._get_cfg(["password"], required=True)
+        self.url = self._get_cfg(["url"], required=True)
+                  
+    def _get_cfg(
+        self,
+        path: List[str],
+        default: Optional[Any] = None,
+        required: Optional[bool] = True,
+    ) -> Any:
+        """Get a config option from a path and option name, specifying whether it is
+        required.
+
+        Raises:
+            ConfigError: If required is True and the object is not found (and there is
+                no default value provided), a ConfigError will be raised.
+        """
+        # Sift through the the config until we reach our option
+        config = self.config_dict
+        for name in path:
+            config = config.get(name)
+
+            # If at any point we don't get our expected option...
+            if config is None:
+                # Raise an error if it was required
+                if required and not default:
+                    raise ConfigError(f"Config option {'.'.join(path)} is required")
+
+                # or return the default value
+                return default
+
+        # We found the option. Return it.
+        return config
               
 class DashboardConnector:
 
-    def __init__(self):
-        self.base_url = "targeturl" #TODO: set the correct target url!
+    def __init__(self, config_file):
+        self.config = Config(config_file)
+        self.base_url = self.config.url
 
     def init_connector(self):
         self.headers = {'Content-Type': 'application/json',
@@ -24,9 +67,10 @@ class DashboardConnector:
         self.user_data = self.get_user_data()
         # Set a group
         self.group = {}
+        self.login_data = {"username":self.config.username, 
+                           "password":self.config.password}
         
-    def set_login(self, login_data):
-        self.login_data = login_data
+    def set_login(self):
         self.auth_url = self.base_url + "/auth/jwt/authenticate"
         
     def get_session_token(self):
@@ -162,8 +206,7 @@ class DashboardConnector:
 
 if __name__ == "__main__":
     # Example usage:
-    connector = DashboardConnector()
-    connector.set_login(login_data)
+    connector = DashboardConnector("dashboard_config.yaml")
     connector.init_connector()
     connector.set_group("Key User")
     connector.create_problem("Neustes Beispielproblem 1")

@@ -107,8 +107,7 @@ For further steps, we ask you to follow the instructions in the [official synaps
 
 ### Debugging and Testing
 
-For a more detailed guide to configuring your server for federation, see
-[federate.md](docs/federate.md).
+For a more detailed guide to configuring your server for federation, see [federate.md](docs/federate.md).
 
 
 1. Go to your ```homeserver.yaml``` location.
@@ -187,7 +186,3 @@ Finally, run the bot via:
 ```
 LD_LIBRARY_PATH=<path-to-olm>/olm/build/ python autorecorderbot_start
 ```
-
-<small>Note: If you plan to use the dashboard connection (by default) you will have to copy the folder ```texpraxconnector``` acessible (either by copying into recorder-bot or adding it to your paths).
-</small>
-
