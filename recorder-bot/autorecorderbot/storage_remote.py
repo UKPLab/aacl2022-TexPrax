@@ -4,7 +4,7 @@ from sqlite3.dbapi2 import Error
 from typing import Any, Dict, List
 
 from tinydb import TinyDB, Query
-from remote_connector.dashboard_requests import DashboardConnector
+from remote_connector import DashboardConnector
 
 # The latest migration version of the database.
 #
