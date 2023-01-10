@@ -54,12 +54,6 @@ A demo video of the project can be found [here](https://nextcloud.ukp.informatik
 
 An anoymized version of the collected data including annotations can be downloaded from [tudatalib](https://tudatalib.ulb.tu-darmstadt.de/handle/tudatalib/3534) or via [huggingface-datasets](https://huggingface.co/datasets/UKPLab/TexPrax) (CC-by-NC). 
 
-### Synapserecording
-
-The modified Synapse instance to automatically invite the bot into newly created rooms.
-**Important**: This requires some features that are only available in an older (deprecated) version that uses python 3.7.
-Please switch to the branch ```python3.7``` for this.
-
 ### Recorder Bot
 
 The chatbot that keeps track of messages, provides label suggestions, and collects feedback via reactions.
@@ -127,6 +121,13 @@ For a more detailed guide to configuring your server for federation, see
 
 ### Setting up the recorder bot
 
+Note: You can setup the bot independently of your synapse server, for instance, using a new env:
+
+```
+conda create --name=texprax-bot python=3.10
+conda activate texprax-demo
+```
+
 OLM is required for encryption. Install it via:
 
     git clone https://gitlab.matrix.org/matrix-org/olm.git olm
@@ -187,3 +188,13 @@ Finally, run the bot via:
 ```
 LD_LIBRARY_PATH=<path-to-olm>/olm/build/ python autorecorderbot_start
 ```
+
+After the bot is running, you can add it like any user to your room. The bot's id in this example will be: `@bot:texprax-demo`
+
+
+### Synapserecording (old version)
+
+The modified Synapse instance to automatically invite the bot into newly created rooms.
+
+**Important**: This requires some features that are only available in an older (deprecated) version that uses python 3.7.
+Please switch to the branch ```python3.7``` for this.
