@@ -29,12 +29,24 @@ A demo video of the project can be found [here](https://nextcloud.ukp.informatik
 ## Citing the paper (to appear)
 
 ```
-@article{stangier2022texprax,
-  title={TexPrax: A Messaging Application for Ethical, Real-time Data Collection and Annotation},
-  author={Stangier, Lorenz and Lee, Ji-Ung and Wang, Yuxi and M{\"u}ller, Marvin and Frick, Nicholas and Metternich, Joachim and Gurevych, Iryna},
-  journal={The 2nd Conference of the Asia-Pacific Chapter of the Association for Computational Linguistics and the 12th International Joint Conference on Natural Language Processing (AACL-ICJNLP): System Demonstrations},
-  year={2022}
+@inproceedings{stangier-etal-2022-texprax,
+    title = "{T}ex{P}rax: A Messaging Application for Ethical, Real-time Data Collection and Annotation",
+    author = {Stangier, Lorenz  and
+      Lee, Ji-Ung  and
+      Wang, Yuxi  and
+      M{\"u}ller, Marvin  and
+      Frick, Nicholas  and
+      Metternich, Joachim  and
+      Gurevych, Iryna},
+    booktitle = "Proceedings of the 2nd Conference of the Asia-Pacific Chapter of the Association for Computational Linguistics and the 12th International Joint Conference on Natural Language Processing: System Demonstrations",
+    month = nov,
+    year = "2022",
+    address = "Taipei, Taiwan",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2022.aacl-demo.2",
+    pages = "9--16",
 }
+
 
 ```
 
