@@ -7,7 +7,7 @@
 > Drop us a line or report an issue if something is broken (and shouldn't be) or if you have any questions.
 
 * **Contact** 
-    * Ji-Ung Lee (lee@ukp.informatik.tu-darmstadt.de) 
+    * Ji-Ung Lee (ji-ung.lee@tu-darmstadt.de) 
     * UKP Lab: http://www.ukp.tu-darmstadt.de/
     * PTW: https://www.ptw.tu-darmstadt.de/
     * TU Darmstadt: http://www.tu-darmstadt.de/
