@@ -143,7 +143,7 @@ Now go to the recorder-bot folder:
 and install the requirements: 
 ```pip install -r requirements.txt``` .
 
-<small>Note: Make sure that you are in the correct python environment e.g., ```conda activate texprax-demo```
+<small>Note: Make sure that you are in the correct python environment e.g., ```conda activate texprax-bot```
 </small>
 
 Now we need to create a config file with the respective paths etc. You can use ```sample.config.yaml``` as your base file.
