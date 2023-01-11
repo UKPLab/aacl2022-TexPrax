@@ -16,11 +16,15 @@
 
 Code for the [TexPrax](https://texprax.de/) project consisting of three components:
 
-* synapserecording (only available for python 3.7, removed with the port to python 3.10)
 * recorder-bot
 * texpraxconnector
+* examples
 
-A detailed description and installation instructions can be found in the respective folders.
+The modification of the matrix-synapse server (`synapserecording`) has been removed from the main branch with the port to python 3.10.
+
+It is still available in the branch `python3.7`
+
+A detailed description and installation instructions can be found below.
 
 A demo video of the project can be found [here](https://nextcloud.ukp.informatik.tu-darmstadt.de/index.php/s/EcQxDwAEeNT4w8n).
 
@@ -96,14 +100,10 @@ This has now created a ```homeserver.yaml``` file. Now you can start the homeser
 ```synctl start``` 
 
 You can check if the installation is running by going to [http://localhost:8008](http://localhost:8008) in your browser.
-For further steps, we ask you to follow the instructions in the [official synapse documentation](https://github.com/UKPLab/TexPrax/blob/main/synapserecording/INSTALL.md#setting-up-synapse).
+For further steps, we ask you to follow the instructions in the [official synapse documentation](https://matrix.org/docs/projects/server/synapse).
 
 
-### Debugging and Testing
-
-For a more detailed guide to configuring your server for federation, see
-[federate.md](docs/federate.md).
-
+### Registering a new user
 
 1. Go to your ```homeserver.yaml``` location.
 2. Add a new user via
@@ -190,7 +190,6 @@ LD_LIBRARY_PATH=<path-to-olm>/olm/build/ python autorecorderbot_start
 ```
 
 After the bot is running, you can add it like any user to your room. The bot's id in this example will be: `@bot:texprax-demo`
-
 
 ### Synapserecording (old version)
 
