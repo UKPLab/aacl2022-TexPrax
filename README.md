@@ -125,7 +125,7 @@ Note: You can setup the bot independently of your synapse server, for instance, 
 
 ```
 conda create --name=texprax-bot python=3.10
-conda activate texprax-demo
+conda activate texprax-bot
 ```
 
 OLM is required for encryption. Install it via:
