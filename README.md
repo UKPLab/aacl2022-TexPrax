@@ -4,7 +4,9 @@
 #### [PTW, TU Darmstadt](https://www.ptw.tu-darmstadt.de/institut_ptw/index.de.jsp)
 `*` Both authors contributed equally.
 
-> Drop us a line or report an issue if something is broken (and shouldn't be) or if you have any questions.
+This repository contains code and data from our TexPrax demo [paper](https://aclanthology.org/2022.aacl-demo.2/) published at AACL 2022. 
+
+> **Abstract:** Collecting and annotating task-oriented dialog data is difficult, especially for highly specific domains that require expert knowledge. At the same time, informal communication channels such as instant messengers are increasingly being used at work. This has led to a lot of work-relevant information that is disseminated through those channels and needs to be post-processed manually by the employees. To alleviate this problem, we present TexPrax, a messaging system to collect and annotate _problems_, _causes_, and _solutions_ that occur in work-related chats. TexPrax uses a chatbot to directly engage the employees to provide lightweight annotations on their conversation and ease their documentation work. To comply with data privacy and security regulations, we use an end-to-end message encryption and give our users full control over their data which has various advantages over conventional annotation tools. We evaluate TexPrax in a user-study with German factory employees who ask their colleagues for solutions on problems that arise during their daily work. Overall, we collect 202 task-oriented German dialogues containing 1,027 sentences with sentence-level expert annotations. Our data analysis also reveals that real-world conversations frequently contain instances with code-switching, varying abbreviations for the same entity, and dialects which NLP systems should be able to handle.
 
 * **Contact** 
     * Ji-Ung Lee (ji-ung.lee@tu-darmstadt.de) 
@@ -12,9 +14,11 @@
     * PTW: https://www.ptw.tu-darmstadt.de/
     * TU Darmstadt: http://www.tu-darmstadt.de/
 
+> Drop us a line or report an issue if something is broken (and shouldn't be) or if you have any questions.
+> 
 > For license information, please see the LICENSE and README files.
 
-Code for the [TexPrax](https://texprax.de/) project consisting of three components:
+The code for the [TexPrax](https://texprax.de/) project consists of three components:
 
 * recorder-bot
 * texpraxconnector
